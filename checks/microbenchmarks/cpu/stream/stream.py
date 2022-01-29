@@ -23,11 +23,7 @@ class StreamTest(rfm.RegressionTest):
         self.use_multithreading = False
 
         self.prgenv_flags = {
-            'PrgEnv-cray': ['-fopenmp', '-O3'],
-            'PrgEnv-gnu': ['-fopenmp', '-O3'],
-            'PrgEnv-intel': ['-qopenmp', '-O3'],
-            'PrgEnv-pgi': ['-mp', '-O3'],
-            'PrgEnv-nvidia': ['-mp', '-O3']
+            'builtin': ['-fopenmp', '-O3'],
         }
 
         self.sourcepath = 'stream.c'
@@ -36,6 +32,8 @@ class StreamTest(rfm.RegressionTest):
         self.num_tasks_per_node = 1
         self.stream_cpus_per_task = {
             'azhop:hc44rs': 44,
+            'azhop:hb120v2': 120,
+            'azhop:hb120v3': 120,
         }
         self.variables = {
             'OMP_PLACES': 'threads',
@@ -48,30 +46,11 @@ class StreamTest(rfm.RegressionTest):
                                       self.stdout, 'triad', float)
         }
         self.stream_bw_reference = {
-            'PrgEnv-cray': {
-                'daint:gpu': {'triad': (44000, -0.05, None, 'MB/s')},
-                'daint:mc': {'triad': (89000, -0.05, None, 'MB/s')},
-                'dom:gpu': {'triad': (44000, -0.05, None, 'MB/s')},
-                'dom:mc': {'triad': (89000, -0.05, None, 'MB/s')},
+            'builtin': {
+                'azhop:hc44rs': {'triad': (14000, -0.05, None, 'MB/s')},
+                'azhop:hb120v2': {'triad': (23000, -0.05, None, 'MB/s')},
+                'azhop:hb120v3': {'triad': (37000, -0.05, None, 'MB/s')},
             },
-            'PrgEnv-gnu': {
-                'daint:gpu': {'triad': (43800, -0.05, None, 'MB/s')},
-                'daint:mc': {'triad': (88500, -0.05, None, 'MB/s')},
-                'dom:gpu': {'triad': (43800, -0.05, None, 'MB/s')},
-                'dom:mc': {'triad': (87500, -0.05, None, 'MB/s')},
-            },
-            'PrgEnv-intel': {
-                'daint:gpu': {'triad': (59500, -0.05, None, 'MB/s')},
-                'daint:mc': {'triad': (119000, -0.05, None, 'MB/s')},
-                'dom:gpu': {'triad': (59500, -0.05, None, 'MB/s')},
-                'dom:mc': {'triad': (119000, -0.05, None, 'MB/s')},
-            },
-            'PrgEnv-pgi': {
-                'daint:gpu': {'triad': (44500, -0.05, None, 'MB/s')},
-                'daint:mc': {'triad': (88500, -0.05, None, 'MB/s')},
-                'dom:gpu': {'triad': (44500, -0.05, None, 'MB/s')},
-                'dom:mc': {'triad': (88500, -0.05, None, 'MB/s')},
-            }
         }
         self.tags = {'production', 'azhop'}
         self.maintainers = ['HM']
@@ -84,8 +63,6 @@ class StreamTest(rfm.RegressionTest):
         envname = self.current_environ.name
 
         self.build_system.cflags = self.prgenv_flags.get(envname, ['-O3'])
-        if envname == 'PrgEnv-pgi':
-            self.variables['OMP_PROC_BIND'] = 'true'
 
         try:
             self.reference = self.stream_bw_reference[envname]
