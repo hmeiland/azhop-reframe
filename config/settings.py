@@ -16,7 +16,31 @@ site_configuration = {
                     'processor': {
                         'num_cpus': 44,
                     },
-                    'descr': 'HC44rs vm'
+                    'descr': 'HC44rs Skylake vm'
+                },
+                {
+                    'name': 'hb120v2',
+                    'scheduler': 'pbs',
+                    'access': ['slot_type=hb120v2'],
+                    'launcher': 'local',
+                    'modules': ['foss/2020a'],
+                    'environs': ['builtin'],
+                    'processor': {
+                        'num_cpus': 120,
+                    },
+                    'descr': 'HB120v2 Rome vm'
+                },
+                {
+                    'name': 'hb120v3',
+                    'scheduler': 'pbs',
+                    'access': ['slot_type=hb120v3'],
+                    'launcher': 'local',
+                    'modules': ['foss/2020a'],
+                    'environs': ['builtin'],
+                    'processor': {
+                        'num_cpus': 120,
+                    },
+                    'descr': 'HB120v3 Milan vm'
                 },
              ]
          },
