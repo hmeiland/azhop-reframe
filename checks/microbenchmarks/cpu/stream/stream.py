@@ -51,6 +51,11 @@ class StreamTest(rfm.RegressionTest):
                 'azhop:hb120v2': {'triad': (23000, -0.05, None, 'MB/s')},
                 'azhop:hb120v3': {'triad': (37000, -0.05, None, 'MB/s')},
             },
+            'eessi-foss-2020a': {
+                'azhop:hc44rs': {'triad': (14000, -0.05, None, 'MB/s')},
+                'azhop:hb120v2': {'triad': (23000, -0.05, None, 'MB/s')},
+                'azhop:hb120v3': {'triad': (37000, -0.05, None, 'MB/s')},
+            },
         }
         self.tags = {'production', 'azhop'}
         self.maintainers = ['HM']
@@ -67,4 +72,4 @@ class StreamTest(rfm.RegressionTest):
         try:
             self.reference = self.stream_bw_reference[envname]
         except KeyError:
-            self.reference = self.stream_bw_reference['PrgEnv-gnu']
+            self.reference = self.stream_bw_reference['builtin']

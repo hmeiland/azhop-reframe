@@ -24,9 +24,10 @@ class AlltoallTest(rfm.RunOnlyRegressionTest):
     }
     num_tasks = 16 
     num_tasks_per_node = 8
+    num_cpus_per_task = 4 
 
     @sanity_function
-    def assert_found_8MB_latency(self):
+    def assert_found_8byte_latency(self):
         return sn.assert_found(r'^8', self.stdout)
 
     @run_before('performance')
@@ -45,7 +46,7 @@ class BandwidthTest(rfm.RunOnlyRegressionTest):
     # The -m option sets the maximum message size
     # The -x option sets the number of warm-up iterations
     # The -i option sets the number of iterations
-    executable_opts = ['-m', '8', '-x', '1000', '-i', '20000']
+    executable_opts = ['-x', '1000', '-i', '20000']
     valid_prog_environs = ['eessi-foss-2020a',]
     modules = ['OSU-Micro-Benchmarks/5.6.3-gompi-2020a']
     maintainers = ['HM']
@@ -59,14 +60,24 @@ class BandwidthTest(rfm.RunOnlyRegressionTest):
     }
     num_tasks = 2
     num_tasks_per_node = 1
+    # num_cpus_per_task = 44
+    time_limit = 3600 
+
+    @run_before('run')
+    def set_hostfile(self):
+        self.job.launcher.options = ['--hostfile $PBS_NODEFILE --map-by ppr:1:node --path $PATH']
 
     @sanity_function
-    def assert_found_8MB_latency(self):
-        return sn.assert_found(r'^8', self.stdout)
+    def assert_found_4MB_bandwidth(self):
+        return sn.assert_found(r'^4194304', self.stdout)
 
-    @run_before('performance')
-    def set_performance_patterns(self):
-        self.perf_patterns = {
-            'latency': sn.extractsingle(r'^8\s+(?P<latency>\S+)',
-                                        self.stdout, 'latency', float)
-        }
+    #@run_before('performance')
+    #def set_performance_patterns(self):
+    #    self.perf_patterns = {
+    #        'bandwidth': sn.extractsingle(r'^4194304\s+(?P<bandwidth>\S+)',
+    #                                    self.stdout, 'bandwidth', float)
+    #    }
+    @performance_function('MB/s')
+    def bandwidth(self):
+        return sn.extractsingle(r'^4194304\s+(\S+)',
+                                self.stdout, 1, float)

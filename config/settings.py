@@ -4,15 +4,15 @@ site_configuration = {
             'name': 'azhop',
             'descr': 'Azure HPC Ondemand with PBS',
             'modules_system': 'lmod',
-	        'hostnames': ['ondemand'],
+	    'hostnames': ['ondemand'],
             'partitions': [
                 {
                     'name': 'hc44rs',
                     'scheduler': 'pbs',
                     'access': ['slot_type=hc44rs'],
-                    'launcher': 'local',
-                    'modules': ['foss/2020a'],
-                    'environs': ['builtin'],
+                    'launcher': 'mpirun',
+                    'environs': ['eessi-foss-2020a'],
+                    'prepare_cmds': ['source /cvmfs/pilot.eessi-hpc.org/versions/2021.12/init/bash', 'export OMPI_MCA_pml=ucx'],
                     'processor': {
                         'num_cpus': 44,
                     },
@@ -22,9 +22,13 @@ site_configuration = {
                     'name': 'hb120v2',
                     'scheduler': 'pbs',
                     'access': ['slot_type=hb120v2'],
-                    'launcher': 'local',
-                    'modules': ['foss/2020a'],
-                    'environs': ['builtin'],
+                    'launcher': 'mpirun',
+                    'environs': ['eessi-foss-2020a'],
+                    'prepare_cmds': [
+                        'export EESSI_SOFTWARE_SUBDIR_OVERRIDE=x86_64/amd/zen2',
+                        'source /cvmfs/pilot.eessi-hpc.org/versions/2021.12/init/bash',
+                        'export OMPI_MCA_pml=ucx'
+                    ],
                     'processor': {
                         'num_cpus': 120,
                     },
@@ -34,9 +38,13 @@ site_configuration = {
                     'name': 'hb120v3',
                     'scheduler': 'pbs',
                     'access': ['slot_type=hb120v3'],
-                    'launcher': 'local',
-                    'modules': ['foss/2020a'],
-                    'environs': ['builtin'],
+                    'launcher': 'mpirun',
+                    'environs': ['eessi-foss-2020a'],
+                    'prepare_cmds': [
+                        'export EESSI_SOFTWARE_SUBDIR_OVERRIDE=x86_64/amd/zen3',
+                        'source /cvmfs/pilot.eessi-hpc.org/versions/2021.12/init/bash',
+                        'export OMPI_MCA_pml=ucx'
+                    ],
                     'processor': {
                         'num_cpus': 120,
                     },
@@ -48,6 +56,13 @@ site_configuration = {
     'environments': [
         {
             'name': 'builtin',
+            'cc': 'gcc',
+            'cxx': '',
+            'ftn': '',
+        },
+        {
+            'name': 'eessi-foss-2020a',
+            'modules': ['foss/2020a'],
             'cc': 'gcc',
             'cxx': '',
             'ftn': '',
