@@ -7,6 +7,18 @@ site_configuration = {
 	    'hostnames': ['ondemand'],
             'partitions': [
                 {
+                    'name': 'execute',
+                    'scheduler': 'pbs',
+                    'access': ['slot_type=execute'],
+                    'launcher': 'local',
+                    'environs': ['builtin'],
+                    'prepare_cmds': ['source /cvmfs/pilot.eessi-hpc.org/versions/2021.12/init/bash', 'export OMPI_MCA_pml=ucx'],
+                    'processor': {
+                        'num_cpus': 2,
+                    },
+                    'descr': 'execute vm'
+                },
+                {
                     'name': 'hc44rs',
                     'scheduler': 'pbs',
                     'access': ['slot_type=hc44rs'],

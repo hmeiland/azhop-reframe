@@ -4,14 +4,14 @@ import reframe.utility.sanity as sn
 @rfm.simple_test
 class AlltoallTest(rfm.RunOnlyRegressionTest):
     strict_check = False
-    valid_systems = ['azhop:hc44rs']
+    valid_systems = ['*']
     descr = 'Alltoall OSU microbenchmark'
     executable = 'osu_alltoall'
     # The -m option sets the maximum message size
     # The -x option sets the number of warm-up iterations
     # The -i option sets the number of iterations
     executable_opts = ['-m', '8', '-x', '1000', '-i', '20000']
-    valid_prog_environs = ['eessi-foss-2020a',]
+    valid_prog_environs = ['*',]
     modules = ['OSU-Micro-Benchmarks/5.6.3-gompi-2020a']
     maintainers = ['HM']
     reference = {
@@ -40,14 +40,14 @@ class AlltoallTest(rfm.RunOnlyRegressionTest):
 @rfm.simple_test
 class BandwidthTest(rfm.RunOnlyRegressionTest):
     strict_check = False
-    valid_systems = ['azhop:hc44rs']
+    valid_systems = ['*']
     descr = 'Bandwidth OSU microbenchmark'
     executable = 'osu_bw'
     # The -m option sets the maximum message size
     # The -x option sets the number of warm-up iterations
     # The -i option sets the number of iterations
     executable_opts = ['-x', '1000', '-i', '20000']
-    valid_prog_environs = ['eessi-foss-2020a',]
+    valid_prog_environs = ['*',]
     modules = ['OSU-Micro-Benchmarks/5.6.3-gompi-2020a']
     maintainers = ['HM']
     reference = {
@@ -71,12 +71,6 @@ class BandwidthTest(rfm.RunOnlyRegressionTest):
     def assert_found_4MB_bandwidth(self):
         return sn.assert_found(r'^4194304', self.stdout)
 
-    #@run_before('performance')
-    #def set_performance_patterns(self):
-    #    self.perf_patterns = {
-    #        'bandwidth': sn.extractsingle(r'^4194304\s+(?P<bandwidth>\S+)',
-    #                                    self.stdout, 'bandwidth', float)
-    #    }
     @performance_function('MB/s')
     def bandwidth(self):
         return sn.extractsingle(r'^4194304\s+(\S+)',
