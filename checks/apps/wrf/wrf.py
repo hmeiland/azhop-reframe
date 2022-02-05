@@ -33,6 +33,20 @@ class WrfCheck(rfm.RunOnlyRegressionTest):
     executable = 'wrf.exe'
     keep_stage_files = 'true'
 
+    wrf_tasks = {
+       'azhop:hc44rs': 44,
+       'azhop:hb120v2': 120,
+       'azhop:hb120v3': 120,
+    }
+
+    @run_after('setup')
+    def prepare_test(self):
+        self.num_tasks = self.wrf_tasks.get(
+            self.current_partition.fullname, 1)
+        self.num_tasks_per_node = self.wrf_tasks.get(
+            self.current_partition.fullname, 1)
+        #self.variables['OMP_NUM_THREADS'] = str(self.num_cpus_per_task)
+
     @run_after('init')
     def inject_dependencies(self):
         self.depends_on('WrfConusDownload', how=udeps.fully)
@@ -48,14 +62,14 @@ class WrfCheck(rfm.RunOnlyRegressionTest):
             f'ln -s bench_12km/* .',
             f'rm rsl.*',
         ]
-        self.num_tasks = 44 
-        self.num_tasks_per_node = 44 
+        #self.num_tasks = 44 
+        #self.num_tasks_per_node = 44 
 
     @sanity_function
     def validate_test(self):
         return sn.assert_found(r'SUCCESS COMPLETE WRF', 'rsl.out.0000')
 
     @performance_function('sec')
-    def bandwidth(self):
-        return sn.extractsingle(r'/^Timing for main: time 2001-10-24_11:58:48 on domain   1:\s+(?P<latency>\S+)/gm',
+    def itteration(self):
+        return sn.extractsingle(r'^Timing for main: time 2001-10-24_11:58:48 on domain\s+1:\s+(?P<itteration>\S+)',
                 'rsl.out.0000', 1, float)
