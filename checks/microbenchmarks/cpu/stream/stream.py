@@ -19,13 +19,12 @@ class StreamTest(rfm.RegressionTest):
         self.exclusive_access = True
         self.valid_systems = ['*']
         self.valid_prog_environs = ['eessi-foss-2020a']
-        self.modules = ['foss/2020a']
+        #self.modules = ['foss/2020a']
 
         self.use_multithreading = False
 
         self.prgenv_flags = {
             'builtin': ['-fopenmp', '-O3'],
-            #'eessi-foss-2020a': ['-fopenmp', '-O', '-DSTREAM_ARRAY_SIZE=20000000'],
             'eessi-foss-2020a': ['-Ofast', '-DSTREAM_ARRAY_SIZE=100000000', '-DNTIMES=20', '-fopenmp', '-mcmodel=medium'],
         }
 
@@ -33,11 +32,14 @@ class StreamTest(rfm.RegressionTest):
         self.build_system = 'SingleSource'
         self.num_tasks = 1
         self.num_tasks_per_node = 1
-        self.stream_cpus_per_task = {
-            'azhop:hc44rs': 44,
-            'azhop:hb120v2': 120,
-            'azhop:hb120v3': 120,
-        }
+
+        # no longer needed due to using it from current_partition
+        #self.stream_cpus_per_task = {
+        #    'azhop:hc44rs': 44,
+        #    'azhop:hb120v2': 120,
+        #    'azhop:hb120v3': 120,
+        #}
+
         self.variables = {
             'OMP_PLACES': 'cores',
             'OMP_PROC_BIND': 'close'
@@ -60,15 +62,17 @@ class StreamTest(rfm.RegressionTest):
 
     @run_after('setup')
     def prepare_test(self):
-        self.num_cpus_per_task = self.stream_cpus_per_task.get(
-            self.current_partition.fullname, 1)
-        #self.variables['OMP_NUM_THREADS'] = str(self.num_cpus_per_task)
-        self.job.launcher.options = ['--map-by node:PE='+str(self.num_cpus_per_task)]
+        # using cpu information from partition iso defining it here
+        self.num_cpus_per_task = self.current_partition.processor.num_cpus
+        self.job.launcher.options = ['--map-by node:PE='+str(self.current_partition.processor.num_cpus)]
+        
         envname = self.current_environ.name
-
         self.build_system.cflags = self.prgenv_flags.get(envname, ['-O3'])
 
-        try:
-            self.reference = self.stream_bw_reference[envname]
-        except KeyError:
-            self.reference = self.stream_bw_reference['builtin']
+        self.reference = self.stream_bw_reference[envname]
+        #self.reference = self.current_partition.reference.stream
+
+        #try:
+        #    self.reference = self.stream_bw_reference[envname]
+        #except KeyError:
+        #    self.reference = self.stream_bw_reference['builtin']

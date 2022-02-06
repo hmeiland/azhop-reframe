@@ -3,16 +3,15 @@ import reframe.utility.sanity as sn
 
 @rfm.simple_test
 class AlltoallTest(rfm.RunOnlyRegressionTest):
-    strict_check = False
-    valid_systems = ['*']
     descr = 'Alltoall OSU microbenchmark'
+    valid_systems = ['*']
+    valid_prog_environs = ['eessi-foss-2020a']
+    modules = ['OSU-Micro-Benchmarks/5.6.3-gompi-2020a']
     executable = 'osu_alltoall'
     # The -m option sets the maximum message size
     # The -x option sets the number of warm-up iterations
     # The -i option sets the number of iterations
     executable_opts = ['-m', '8', '-x', '1000', '-i', '20000']
-    valid_prog_environs = ['*',]
-    modules = ['OSU-Micro-Benchmarks/5.6.3-gompi-2020a']
     maintainers = ['HM']
     reference = {
         'dom:gpu': {
@@ -39,16 +38,15 @@ class AlltoallTest(rfm.RunOnlyRegressionTest):
 
 @rfm.simple_test
 class BandwidthTest(rfm.RunOnlyRegressionTest):
-    strict_check = False
-    valid_systems = ['*']
     descr = 'Bandwidth OSU microbenchmark'
+    valid_systems = ['*']
+    valid_prog_environs = ['eessi-foss-2020a']
+    modules = ['OSU-Micro-Benchmarks/5.6.3-gompi-2020a']
     executable = 'osu_bw'
     # The -m option sets the maximum message size
     # The -x option sets the number of warm-up iterations
     # The -i option sets the number of iterations
     executable_opts = ['-x', '1000', '-i', '20000']
-    valid_prog_environs = ['*',]
-    modules = ['OSU-Micro-Benchmarks/5.6.3-gompi-2020a']
     maintainers = ['HM']
     reference = {
         'dom:gpu': {
@@ -60,7 +58,6 @@ class BandwidthTest(rfm.RunOnlyRegressionTest):
     }
     num_tasks = 2
     num_tasks_per_node = 1
-    # num_cpus_per_task = 44
     time_limit = 3600 
 
     @run_before('run')

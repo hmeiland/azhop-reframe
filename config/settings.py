@@ -28,6 +28,9 @@ site_configuration = {
                     'processor': {
                         'num_cpus': 44,
                     },
+                    #'reference': {
+                    #    'stream:': {'triad': (10000, -0.05, None, 'MB/s')},
+                    #    },
                     'descr': 'HC44rs Skylake vm'
                 },
                 {
