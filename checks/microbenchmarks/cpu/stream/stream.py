@@ -17,13 +17,16 @@ class StreamTest(rfm.RegressionTest):
     def __init__(self):
         self.descr = 'STREAM Benchmark'
         self.exclusive_access = True
-        self.valid_systems = ['azhop']
-        self.valid_prog_environs = ['*']
+        self.valid_systems = ['*']
+        self.valid_prog_environs = ['eessi-foss-2020a']
+        self.modules = ['foss/2020a']
 
         self.use_multithreading = False
 
         self.prgenv_flags = {
             'builtin': ['-fopenmp', '-O3'],
+            #'eessi-foss-2020a': ['-fopenmp', '-O', '-DSTREAM_ARRAY_SIZE=20000000'],
+            'eessi-foss-2020a': ['-Ofast', '-DSTREAM_ARRAY_SIZE=100000000', '-DNTIMES=20', '-fopenmp', '-mcmodel=medium'],
         }
 
         self.sourcepath = 'stream.c'
@@ -36,8 +39,8 @@ class StreamTest(rfm.RegressionTest):
             'azhop:hb120v3': 120,
         }
         self.variables = {
-            'OMP_PLACES': 'threads',
-            'OMP_PROC_BIND': 'spread'
+            'OMP_PLACES': 'cores',
+            'OMP_PROC_BIND': 'close'
         }
         self.sanity_patterns = sn.assert_found(
             r'Solution Validates: avg error less than', self.stdout)
@@ -46,15 +49,10 @@ class StreamTest(rfm.RegressionTest):
                                       self.stdout, 'triad', float)
         }
         self.stream_bw_reference = {
-            'builtin': {
-                'azhop:hc44rs': {'triad': (14000, -0.05, None, 'MB/s')},
-                'azhop:hb120v2': {'triad': (23000, -0.05, None, 'MB/s')},
-                'azhop:hb120v3': {'triad': (37000, -0.05, None, 'MB/s')},
-            },
             'eessi-foss-2020a': {
-                'azhop:hc44rs': {'triad': (14000, -0.05, None, 'MB/s')},
-                'azhop:hb120v2': {'triad': (23000, -0.05, None, 'MB/s')},
-                'azhop:hb120v3': {'triad': (37000, -0.05, None, 'MB/s')},
+                'azhop:hc44rs': {'triad': (10000, -0.05, None, 'MB/s')},
+                'azhop:hb120v2': {'triad': (20000, -0.05, None, 'MB/s')},
+                'azhop:hb120v3': {'triad': (30000, -0.05, None, 'MB/s')},
             },
         }
         self.tags = {'production', 'azhop'}
@@ -64,7 +62,8 @@ class StreamTest(rfm.RegressionTest):
     def prepare_test(self):
         self.num_cpus_per_task = self.stream_cpus_per_task.get(
             self.current_partition.fullname, 1)
-        self.variables['OMP_NUM_THREADS'] = str(self.num_cpus_per_task)
+        #self.variables['OMP_NUM_THREADS'] = str(self.num_cpus_per_task)
+        self.job.launcher.options = ['--map-by node:PE='+str(self.num_cpus_per_task)]
         envname = self.current_environ.name
 
         self.build_system.cflags = self.prgenv_flags.get(envname, ['-O3'])

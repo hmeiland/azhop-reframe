@@ -4,8 +4,8 @@ This repo hosts the Reframe tests and config file for the Az-HOP environment.
 To use:
 
 ```
-#> git clone
+#> git clone https://github.com/hmeiland/azhop-reframe.git
 #> cd azhop-reframe
-#> source EESSI
-#> reframe -C config/settings.py --system azhop -c checks/microbenchmarks/cpu/ --recursive -r
+#> pip install --user reframe #need version >3.9.2 for some features
+#> reframe -C config/settings.py -c checks --recursive -r
 ```
